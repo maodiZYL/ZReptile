@@ -22,6 +22,7 @@ type tongxing8 struct {
 	ImC2CGroupID string `json:"im_c2c_group_id"`
 }
 
+////不好搞
 func main() {
 	for i := 1; i < 284; i++ {
 		ne := "sBAKAgj"
