@@ -1,3 +1,7 @@
+// com.jinglan.yaowang 包，该包是遥望爬虫。
+//创建人：zhuyelu
+//创建时间：20200605
+
 package main
 
 import (
@@ -13,33 +17,35 @@ import (
 	"strings"
 )
 
-type YonghuID struct {
+//用户id
+type UserID struct {
 	Data struct {
 		NewFans []struct {
 			BefollowID int `json:"befollow_id"`
 		} `json:"newFans"`
 	} `json:"data"`
 }
-type Tongxing struct {
+
+//通信id
+type SignalCommunicationID struct {
 	Data struct {
 		HuanxinAccount string `json:"huanxin_account"`
 	} `json:"data"`
 }
 
+//主方法
 func main() {
 	for i := 1; i < 784; i++ {
-		body := yaowangId(i)
-		var tem YonghuID           //用结构体
-		json.Unmarshal(body, &tem) //将查到的数据放到结构体中
-		/*for j,_ :=range tem.Data.NewFans{
-		c :=tem.Data.NewFans[j].BefollowID*/
-		//fmt.Println(tme)
-		tongxingId(tem) //传结构体
+		body := ClimbCUserID(i)
+		var tem UserID                  //用结构体
+		json.Unmarshal(body, &tem)      //将查到的数据放到结构体中
+		Climb_SignalommunicationID(tem) //传结构体
 	}
 
 }
 
-func yaowangId(i int) []byte {
+//爬出用户id
+func ClimbCUserID(i int) []byte {
 
 	url := "https://app.jinglantech.tech/message/newfans"
 	//创建代理
@@ -74,12 +80,12 @@ func yaowangId(i int) []byte {
 	defer resp.Body.Close()
 	body, _ := ioutil.ReadAll(resp.Body)
 	//fmt.Println(string(body))
-
 	return body
 
 }
 
-func tongxingId(bang YonghuID) { //bang为结构体
+//爬出通信id
+func Climb_SignalommunicationID(bang UserID) { //bang为结构体
 	for i := 0; i < len(bang.Data.NewFans); i++ { //循环遍历
 		url := fmt.Sprintf("https://app.jinglantech.tech/user/findfollowbyid")
 		//创建代理
@@ -109,15 +115,14 @@ func tongxingId(bang YonghuID) { //bang为结构体
 		}
 		resp, _ = httpClient.Do(req)
 		body, _ := ioutil.ReadAll(resp.Body) //读取响应
-		var tem Tongxing                     //用结构体
-		json.Unmarshal(body, &tem)           //将查到的数据放到结构体中
-		//fmt.Println(string(body))
-		//fmt.Println(tem)
-		Mysqlyao(tem)
+		var tem SignalCommunicationID        //用结构体
+		json.Unmarshal(body, &tem)
+		MysqlLookingForward(tem)
 	}
 }
 
-func Mysqlyao(s Tongxing) {
+//将数据传到数据库
+func MysqlLookingForward(s SignalCommunicationID) {
 	db, _ := sql.Open("mysql", "root:haosql@tcp(127.0.0.1:3306)/blogdb?charset=utf8") //链接数据库
 	stmt, _ := db.Prepare("INSERT yaowang (n_id) values (?)")                         //插入语句   字段不能填错
 	for i := 0; i < len(s.Data.HuanxinAccount); i++ {                                 //循环插入
