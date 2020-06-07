@@ -36,43 +36,18 @@ func main() {
 
 //爬猫咪交友私信id
 func Climb_SignalommunicationID(pageIndex int, typechange int) {
-
+	request := "POST"
 	url := "https://higumeng.cn/memberAnchor/memberAnchors"
-
-	//创建代理
-	auth := proxy.Auth{
-		User:     "itemb123",
-		Password: "kIl8Jl3aKej",
-	}
-	address := fmt.Sprintf("%s:%s", "101.133.153.21", "9999")
-	dialer, _ := proxy.SOCKS5("tcp", address, &auth, proxy.Direct)
-
 	payload := strings.NewReader(fmt.Sprintf("pageIndex=%v&type=%v&channel=qita", pageIndex, typechange)) //fmt.Sprintf()才能用%v
-	req, _ := http.NewRequest("POST", url, payload)
-	//请求头
-	req.Header.Add("content-length", "31")
-	req.Header.Add("Host", "<calculated when request is sent>")
-	req.Header.Add("content-type", "application/x-www-form-urlencoded")
-	req.Header.Add("user-agent", "gzip")
-
-	//使用代理
-	var resp *http.Response
-	httpTransport := &http.Transport{ //跳过证书验证
-		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
-	}
-	httpClient := &http.Client{Transport: httpTransport}
-	if dialer != nil {
-		httpTransport.Dial = dialer.Dial
-	}
-	resp, _ = httpClient.Do(req) //处理请求
-
-	//resp, _ := http.DefaultClient.Do(req)//不用代理的处理请求
-	defer resp.Body.Close()              //关闭请求
-	body, _ := ioutil.ReadAll(resp.Body) //读取响应
-	var kitty SignalCommunicationID      //应用结构体
-	json.Unmarshal(body, &kitty)         //将数据存放到结构体中
-	//fmt.Println(string(body)) //控制台输出body
-	//fmt.Println(mao)          //控制台输出mao
+	mapNum := make(map[string]string)
+	mapNum["content-length"] = "31"
+	mapNum["Host"] = "<calculated when request is sent>"
+	mapNum["content-type"] = "application/x-www-form-urlencoded"
+	mapNum["user-agent"] = "gzip"
+	body := Agent(request, url, payload, mapNum)
+	var kitty SignalCommunicationID //应用结构体
+	json.Unmarshal(body, &kitty)    //将数据存放到结构体中
+	//fmt.Println(kitty)          //控制台输出mao
 	MsqlKitty(kitty)
 }
 
@@ -85,4 +60,35 @@ func MsqlKitty(mao SignalCommunicationID) {
 		fmt.Println(est)
 	}
 	db.Close()
+}
+
+func Agent(request, url string, l *strings.Reader, to map[string]string) []byte {
+
+	//创建代理
+	auth := proxy.Auth{
+		User:     "itemb123",
+		Password: "kIl8Jl3aKej",
+	}
+	address := fmt.Sprintf("%s:%s", "101.133.153.21", "9999")
+	dialer, _ := proxy.SOCKS5("tcp", address, &auth, proxy.Direct)
+
+	req, _ := http.NewRequest(request, url, l) //开始请求
+	for key, value := range to {
+		req.Header.Set(key, value)
+	}
+
+	//使用代理
+	var resp *http.Response
+	httpTransport := &http.Transport{ //跳过证书验证
+		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+	}
+	httpClient := &http.Client{Transport: httpTransport}
+	if dialer != nil {
+		httpTransport.Dial = dialer.Dial
+	}
+
+	resp, _ = httpClient.Do(req)         //处理请求
+	body, _ := ioutil.ReadAll(resp.Body) //读取响应
+	return body
+
 }

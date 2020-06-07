@@ -11,7 +11,7 @@ func main() {
 	h := md5.New()
 	//n1 :=fmt.Sprintf("")
 
-	n2 := "appType%3Dandroid%26appVersion%3D3.3.2%26appkey%3Dshow_android%26appsecret%3Db64939eddd94efa1c750f2563868c2b8%26area%3DALL%26channelType%3Da_xiaomi%26page%3D2%26pageSize%3D20%26session_id%3Dc44e6327-f806-41ec-aac0-d268373e8001%26sex%3DALL%26sortProperty%3DactiveData%26timestamp%3D1591087680%26userId%3D50166072"
+	n2 := "source=android&device_id=883dba42c33f6e900ec1f579ec6fc72f&app_style=1&version=9&ads_idf=d28c935848e22dedfbe0e345acb3ed04&channel=oppo&keywords=2"
 
 	//n3 :="https://yuewowan.yangba.tv/career/queryKeDouIndexList"
 

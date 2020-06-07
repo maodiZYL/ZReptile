@@ -23,7 +23,7 @@ type SignalCommunicationID struct {
 	} `json:"res"`
 }
 
-func main() {
+func ComTbLinzhu() {
 	for n := 1; n <= 40; n++ {
 		for i := 1; i <= 11; i++ {
 			time.Sleep(time.Second * 1) //设置时间
@@ -37,39 +37,18 @@ func main() {
 
 //爬邻住私信Id
 func Climb_SignalommunicationID(flag int, page int, catid int) {
-
+	request := "POST"
 	url := "https://app.linzhu.net/app/square/getPosts"
-	//创建代理
-	auth := proxy.Auth{
-		User:     "itemb123",
-		Password: "kIl8Jl3aKej",
-	}
-	address := fmt.Sprintf("%s:%s", "101.133.153.21", "9999")
-	dialer, _ := proxy.SOCKS5("tcp", address, &auth, proxy.Direct)
-
 	payload := strings.NewReader(fmt.Sprintf("catid=%v&page=%v&flag=%v", catid, page, flag)) //fmt.Sprintf()才能用%v
-	req, _ := http.NewRequest("POST", url, payload)
-	req.Header.Add("content-length", "22")
-	req.Header.Add("Host", "<calculated when request is sent>")
-	req.Header.Add("content-type", "application/x-www-form-urlencoded")
-	req.Header.Add("user-agent", "okhttp/3.6.0")
+	mapNum := make(map[string]string)
+	mapNum["content-length"] = "22"
+	mapNum["Host"] = "<calculated when request is sent>"
+	mapNum["content-type"] = "application/x-www-form-urlencoded"
+	mapNum["user-agent"] = "okhttp/3.6.0"
 
-	//使用代理
-	var resp *http.Response
-	httpTransport := &http.Transport{ //跳过证书验证
-		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
-	}
-	httpClient := &http.Client{Transport: httpTransport}
-	if dialer != nil {
-		httpTransport.Dial = dialer.Dial
-	}
-	resp, _ = httpClient.Do(req) //处理请求
-	//resp, _ := http.DefaultClient.Do(req)
-	defer resp.Body.Close()
-	body, _ := ioutil.ReadAll(resp.Body)
+	body := Agent(request, url, payload, mapNum)
 	var hood SignalCommunicationID
 	json.Unmarshal(body, &hood)
-	fmt.Println(string(body))
 	fmt.Println(hood)
 	MysqlNeighborhood(hood)
 }
@@ -83,4 +62,35 @@ func MysqlNeighborhood(hood SignalCommunicationID) {
 		fmt.Println(est)
 	}
 	db.Close()
+}
+
+func Agent(request, url string, l *strings.Reader, to map[string]string) []byte {
+
+	//创建代理
+	auth := proxy.Auth{
+		User:     "itemb123",
+		Password: "kIl8Jl3aKej",
+	}
+	address := fmt.Sprintf("%s:%s", "101.133.153.21", "9999")
+	dialer, _ := proxy.SOCKS5("tcp", address, &auth, proxy.Direct)
+
+	req, _ := http.NewRequest(request, url, l) //开始请求
+	for key, value := range to {
+		req.Header.Set(key, value)
+	}
+
+	//使用代理
+	var resp *http.Response
+	httpTransport := &http.Transport{ //跳过证书验证
+		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+	}
+	httpClient := &http.Client{Transport: httpTransport}
+	if dialer != nil {
+		httpTransport.Dial = dialer.Dial
+	}
+
+	resp, _ = httpClient.Do(req)         //处理请求
+	body, _ := ioutil.ReadAll(resp.Body) //读取响应
+	return body
+
 }

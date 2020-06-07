@@ -5,7 +5,6 @@
 package main
 
 import (
-	"bytes"
 	"crypto/tls"
 	"database/sql"
 	"encoding/json"
@@ -14,6 +13,7 @@ import (
 	"golang.org/x/net/proxy"
 	"io/ioutil"
 	"net/http"
+	"strings"
 )
 
 //用户id
@@ -37,87 +37,45 @@ func main() {
 
 //爬出用户id
 func ClimbCUserID() {
+
 	state_id := "sBAKAgj"
+	request := "GET"
 	url := fmt.Sprintf("https://app.quanziapp.com/api/v2/%v/members?&page=1&per_page=100", state_id)
-	//创建代理
-	auth := proxy.Auth{
-		User:     "itemb123",
-		Password: "kIl8Jl3aKej",
-	}
-	address := fmt.Sprintf("%s:%s", "101.133.153.21", "9999")
-	dialer, _ := proxy.SOCKS5("tcp", address, &auth, proxy.Direct)
-
-	req, _ := http.NewRequest("GET", url, nil) //开始请求
-	req.Header.Set("Host", "<calculated when request is sent>")
-	req.Header.Set("x-app-version", "Android Circles 3.5.3")
-	req.Header.Set("authorization", "token Vnn9DLoPTnscLgoMRcG9eNXT1590739356.5220678")
-
-	//使用代理
-	var resp *http.Response
-	httpTransport := &http.Transport{
-		//跳过证书验证
-		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
-	}
-	httpClient := &http.Client{Transport: httpTransport}
-	if dialer != nil {
-		httpTransport.Dial = dialer.Dial
-	}
-
-	resp, _ = httpClient.Do(req)
-	//resp, _ := client.Do(req)   //处理请求
-	body, _ := ioutil.ReadAll(resp.Body) //读取响应
-	var state UserID                     //用结构体
+	mapNum := make(map[string]string)
+	mapNum["Host"] = "<calculated when request is sent>"
+	mapNum["x-app-version"] = "Android Circles 3.5.3"
+	mapNum["authorization"] = "token Vnn9DLoPTnscLgoMRcG9eNXT1590739356.5220678"
+	body := Agent(request, url, nil, mapNum)
+	var state UserID //用结构体
 	json.Unmarshal(body, &state)
 	//将查到的数据放到结构体中
 	for i := 0; i < len(state.Members); i++ {
 		userid := state.Members[i].ID
 		Climb_SignalommunicationID(state_id, userid)
-		//fmt.Println(n)
 	}
+
 }
 
 //爬出通信id
 func Climb_SignalommunicationID(identifier string, member_id string) { //bang为结构体，接收的是结构体
+
+	request := "POST"
 	url := fmt.Sprintf("https://app.quanziapp.com/api/v2/im/init_c2c_group_contact")
-
-	//创建代理
-	auth := proxy.Auth{
-		User:     "itemb123",
-		Password: "kIl8Jl3aKej",
-	}
-	address := fmt.Sprintf("%s:%s", "101.133.153.21", "9999")
-	dialer, _ := proxy.SOCKS5("tcp", address, &auth, proxy.Direct)
-
-	requestBody := fmt.Sprintf(`{"identifier":"%v","member_id":"%v"}`, identifier, member_id) //传application/json; charset=utf-8
-	var jsonStr = []byte(requestBody)
-
-	//payload := strings.NewReader(fmt.Sprintf("befollow_id=%v&user_id=98236258&is_login=0",bang.Members[i].ID)) //fmt.Sprintf()才能用%v  //传application/x-www-form-urlencoded
-
-	req, _ := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr)) //开始请求
-	req.Header.Set("Host", "<calculated when request is sent>")
-	req.Header.Set("authorization", "token Vnn9DLoPTnscLgoMRcG9eNXT1590739356.5220678")
-	req.Header.Set("Content-Length", "<calculated when request is sent>")
-	req.Header.Set("x-app-version", "Android Circles 3.5.3")
-	req.Header.Set("content-type", "application/json; charset=utf-8")
-	req.Header.Set("accept-language", "zh")
-	req.Header.Set("user-agent", "okhttp/3.14.4")
-
-	//使用代理
-	var resp *http.Response
-	httpTransport := &http.Transport{
-		//跳过证书验证
-		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
-	}
-	httpClient := &http.Client{Transport: httpTransport}
-	if dialer != nil {
-		httpTransport.Dial = dialer.Dial
-	}
-	resp, _ = httpClient.Do(req)
-	body, _ := ioutil.ReadAll(resp.Body) //读取响应
-	var tem SignalCommunicationID        //用结构体
-	json.Unmarshal(body, &tem)           //将查到的数据放到结构体中
-	//fmt.Println(string(body))
+	payload := strings.NewReader(fmt.Sprintf(`{"identifier":"%v","member_id":"%v"}`, identifier, member_id)) //传application/json; charset=utf-8
+	mapNum := make(map[string]string)                                                                        //用map储存键值对信息
+	mapNum["Host"] = "<calculated when request is sent>"
+	mapNum["authorization"] = "token Vnn9DLoPTnscLgoMRcG9eNXT1590739356.5220678"
+	mapNum["Content-Length"] = "<calculated when request is sent>"
+	mapNum["x-app-version"] = "Android Circles 3.5.3"
+	mapNum["Content-Type"] = "application/json; charset=utf-8"
+	mapNum["accept-language"] = "zh"
+	mapNum["user-agent"] = "okhttp/3.14.4"
+	body := Agent(request, url, payload, mapNum)
+	var tem SignalCommunicationID //用结构体
+	json.Unmarshal(body, &tem)    //将查到的数据放到结构体中
+	fmt.Println(string(body))
 	MysqUtopia(tem)
+
 }
 
 //将数据插入blogdb数据库中utopia
@@ -129,4 +87,36 @@ func MysqUtopia(utopia SignalCommunicationID) {
 		fmt.Println(shuju)
 	}
 	db.Close()
+}
+
+//代理
+func Agent(request, url string, l *strings.Reader, to map[string]string) []byte {
+
+	//创建代理
+	auth := proxy.Auth{
+		User:     "itemb123",
+		Password: "kIl8Jl3aKej",
+	}
+	address := fmt.Sprintf("%s:%s", "101.133.153.21", "9999")
+	dialer, _ := proxy.SOCKS5("tcp", address, &auth, proxy.Direct)
+
+	req, _ := http.NewRequest(request, url, l) //开始请求
+	for key, value := range to {
+		req.Header.Set(key, value)
+	}
+
+	//使用代理
+	var resp *http.Response
+	httpTransport := &http.Transport{ //跳过证书验证
+		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+	}
+	httpClient := &http.Client{Transport: httpTransport}
+	if dialer != nil {
+		httpTransport.Dial = dialer.Dial
+	}
+
+	resp, _ = httpClient.Do(req)         //处理请求
+	body, _ := ioutil.ReadAll(resp.Body) //读取响应
+	return body
+
 }

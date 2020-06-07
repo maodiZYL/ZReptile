@@ -82,7 +82,8 @@ func MysqlTadpole(tadpole SignalCommunicationID) {
 }
 
 //代理
-func Agent(qingqu, url string, l *strings.Reader, to map[string]string) []byte {
+func Agent(request, url string, l *strings.Reader, to map[string]string) []byte {
+
 	//创建代理
 	auth := proxy.Auth{
 		User:     "itemb123",
@@ -91,7 +92,7 @@ func Agent(qingqu, url string, l *strings.Reader, to map[string]string) []byte {
 	address := fmt.Sprintf("%s:%s", "101.133.153.21", "9999")
 	dialer, _ := proxy.SOCKS5("tcp", address, &auth, proxy.Direct)
 
-	req, _ := http.NewRequest(qingqu, url, l) //开始请求
+	req, _ := http.NewRequest(request, url, l) //开始请求
 	for key, value := range to {
 		req.Header.Set(key, value)
 	}
@@ -105,8 +106,8 @@ func Agent(qingqu, url string, l *strings.Reader, to map[string]string) []byte {
 	if dialer != nil {
 		httpTransport.Dial = dialer.Dial
 	}
+
 	resp, _ = httpClient.Do(req)         //处理请求
 	body, _ := ioutil.ReadAll(resp.Body) //读取响应
-
 	return body
 }

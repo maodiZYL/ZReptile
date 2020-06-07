@@ -18,6 +18,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	_ "net/url"
+	"strings"
 	"time"
 )
 
@@ -38,37 +39,15 @@ func main() {
 //爬通信id
 func Climb_SignalommunicationID(pageid int) {
 	sign := MD5_Encryption(pageid)
+	request := "GET"
 	url := fmt.Sprintf("http://apk.qqi2019.com:8001/Api/sound_call/soundcall.aspx?pageid=%v&userid=73002494&sign=%v", pageid, sign)
-
-	//创建代理
-	auth := proxy.Auth{
-		User:     "itemb123",
-		Password: "kIl8Jl3aKej",
-	}
-	address := fmt.Sprintf("%s:%s", "101.133.153.21", "9999")
-	dialer, _ := proxy.SOCKS5("tcp", address, &auth, proxy.Direct)
-
-	//client := &http.Client{}                   //导入请求的包
-	req, _ := http.NewRequest("GET", url, nil) //开始请求
-	req.Header.Set("Host", "apk.qqi2019.com:8001")
-	req.Header.Set("User-Agent", "okhttp/3.12.1")
-	req.Header.Set("Connection", "keep-alive")
-	//使用代理
-	var resp *http.Response
-	httpTransport := &http.Transport{ //跳过证书验证
-		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
-	}
-	httpClient := &http.Client{Transport: httpTransport}
-	if dialer != nil {
-		httpTransport.Dial = dialer.Dial
-	}
-	resp, _ = httpClient.Do(req)
-	//resp, _ := client.Do(req) //处理请求
-	defer resp.Body.Close() //关闭
-
-	body, _ := ioutil.ReadAll(resp.Body) //读取响应
-	var tem SignalCommunicationID        //用结构体
-	json.Unmarshal(body, &tem)           //将查到的数据放到结构体中
+	mapNum := make(map[string]string) //用map储存键值对信息
+	mapNum["Host"] = "apk.qqi2019.com:8001"
+	mapNum["User-Agent"] = "okhttp/3.12.1"
+	mapNum["Connection"] = "keep-alive"
+	body := Agent(request, url, nil, mapNum)
+	var tem SignalCommunicationID //用结构体
+	json.Unmarshal(body, &tem)    //将查到的数据放到结构体中
 	//fmt.Println(string(body))    //打印body内数据
 	MysqlRefill(tem)
 	time.Sleep(time.Second * 10) //设置时间
@@ -94,4 +73,35 @@ func MysqlRefill(refill SignalCommunicationID) {
 		fmt.Println(est)
 	}
 	db.Close()
+}
+
+func Agent(request, url string, l *strings.Reader, to map[string]string) []byte {
+
+	//创建代理
+	auth := proxy.Auth{
+		User:     "itemb123",
+		Password: "kIl8Jl3aKej",
+	}
+	address := fmt.Sprintf("%s:%s", "101.133.153.21", "9999")
+	dialer, _ := proxy.SOCKS5("tcp", address, &auth, proxy.Direct)
+
+	req, _ := http.NewRequest(request, url, l) //开始请求
+	for key, value := range to {
+		req.Header.Set(key, value)
+	}
+
+	//使用代理
+	var resp *http.Response
+	httpTransport := &http.Transport{ //跳过证书验证
+		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+	}
+	httpClient := &http.Client{Transport: httpTransport}
+	if dialer != nil {
+		httpTransport.Dial = dialer.Dial
+	}
+
+	resp, _ = httpClient.Do(req)         //处理请求
+	body, _ := ioutil.ReadAll(resp.Body) //读取响应
+	return body
+
 }

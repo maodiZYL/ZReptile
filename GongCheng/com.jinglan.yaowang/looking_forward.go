@@ -93,7 +93,7 @@ func MysqlLookingForward(s SignalCommunicationID) {
 }
 
 //代理
-func Agent(qingqu, url string, l *strings.Reader, to map[string]string) []byte {
+func Agent(request, url string, l *strings.Reader, to map[string]string) []byte {
 
 	//创建代理
 	auth := proxy.Auth{
@@ -103,7 +103,7 @@ func Agent(qingqu, url string, l *strings.Reader, to map[string]string) []byte {
 	address := fmt.Sprintf("%s:%s", "101.133.153.21", "9999")
 	dialer, _ := proxy.SOCKS5("tcp", address, &auth, proxy.Direct)
 
-	req, _ := http.NewRequest(qingqu, url, l) //开始请求
+	req, _ := http.NewRequest(request, url, l) //开始请求
 	for key, value := range to {
 		req.Header.Set(key, value)
 	}

@@ -14,7 +14,6 @@ import (
 	"io/ioutil"
 	"mime/multipart"
 	"net/http"
-
 	//"crypto/tls"
 	///	"database/sql"
 	//"encoding/json"
@@ -51,53 +50,33 @@ func FromData() {
 	postData["channel"] = "oppo"
 	postData["keywords"] = "7"
 	postData["sign"] = "cc79c19f7a46f644122da76f39e758be"
-	url := "http://open2.gamemm.com/index/searchUserList"
-	Climb_SignalommunicationID("POST", url, &postData)
+	Climb_SignalommunicationID(&postData)
 }
 
 //爬取私信Id
-func Climb_SignalommunicationID(method, url string, postData *map[string]string) {
-	body := new(bytes.Buffer)
-	w := multipart.NewWriter(body)
+func Climb_SignalommunicationID(postData *map[string]string) {
+
+	request := "POST"
+	url := "http://open2.gamemm.com/index/searchUserList"
+	payload := new(bytes.Buffer)
+	w := multipart.NewWriter(payload)
 	for k, v := range *postData {
 		w.WriteField(k, v)
 	}
-	w.Close()
 
-	//创建代理
-	auth := proxy.Auth{
-		User:     "itemb123",
-		Password: "kIl8Jl3aKej",
-	}
-	address := fmt.Sprintf("%s:%s", "101.133.153.21", "9999")
-	dialer, _ := proxy.SOCKS5("tcp", address, &auth, proxy.Direct)
+	mapNum := make(map[string]string) //用map储存键值对信息
+	mapNum["Content-Type"] = w.FormDataContentType()
+	mapNum["Host"] = "open2.gamemm.com"
+	mapNum["User-Agent"] = "okhttp/3.11.0"
+	mapNum["Connection"] = "keep-alive"
+	mapNum["Content-Length"] = "1190"
 
-	req, _ := http.NewRequest(method, url, body)
-	req.Header.Add("Content-Type", w.FormDataContentType())
-	req.Header.Add("Host", "open2.gamemm.com")
-	//req.Header.Add("Accept-Encoding", "gzip")
-	req.Header.Add("User-Agent", "okhttp/3.11.0")
-	req.Header.Add("Connection", "keep-alive")
-	req.Header.Add("Content-Length", "1190")
-
-	//使用代理
-	var resp *http.Response
-	httpTransport := &http.Transport{ //跳过证书验证
-		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
-	}
-	httpClient := &http.Client{Transport: httpTransport}
-	if dialer != nil {
-		httpTransport.Dial = dialer.Dial
-	}
-
-	resp, _ = httpClient.Do(req)
-	data, _ := ioutil.ReadAll(resp.Body)
-	defer resp.Body.Close()
+	body := Agent(request, url, payload, mapNum)
 	var kiss SignalCommunicationID
-	json.Unmarshal(data, &kiss)
-	fmt.Println(string(data))
-	//fmt.Println(kiss)
+	json.Unmarshal(body, &kiss)
+	fmt.Println(string(body))
 	MysqlKiss(kiss)
+
 }
 
 //将数据插入blogdb数据库kiss表
@@ -109,4 +88,35 @@ func MysqlKiss(kiss SignalCommunicationID) {
 		fmt.Println(est)
 	}
 	db.Close()
+}
+
+//代理
+func Agent(request, url string, l *bytes.Buffer, to map[string]string) []byte {
+
+	//创建代理
+	auth := proxy.Auth{
+		User:     "itemb123",
+		Password: "kIl8Jl3aKej",
+	}
+	address := fmt.Sprintf("%s:%s", "101.133.153.21", "9999")
+	dialer, _ := proxy.SOCKS5("tcp", address, &auth, proxy.Direct)
+
+	req, _ := http.NewRequest(request, url, l) //开始请求
+	for key, value := range to {
+		req.Header.Set(key, value)
+	}
+
+	//使用代理
+	var resp *http.Response
+	httpTransport := &http.Transport{ //跳过证书验证
+		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+	}
+	httpClient := &http.Client{Transport: httpTransport}
+	if dialer != nil {
+		httpTransport.Dial = dialer.Dial
+	}
+
+	resp, _ = httpClient.Do(req)         //处理请求
+	body, _ := ioutil.ReadAll(resp.Body) //读取响应
+	return body
 }
