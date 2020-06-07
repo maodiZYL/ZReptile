@@ -38,41 +38,20 @@ func main() {
 
 //爬通信id
 func Climb_SignalommunicationID(i int, page int) {
-	timestamp := int32(time.Now().Unix()) //获取当前时间戳
 
+	timestamp := int32(time.Now().Unix())   //获取当前时间戳
 	sign := MD5_Encryption(page, timestamp) //调用加密方法
-
-	//创建代理
-	auth := proxy.Auth{
-		User:     "itemb123",
-		Password: "kIl8Jl3aKej",
-	}
-	address := fmt.Sprintf("%s:%s", "101.133.153.21", "9999")
-	dialer, _ := proxy.SOCKS5("tcp", address, &auth, proxy.Direct)
-
+	request := "POST"                       //请求方式
 	url := "https://yuewowan.yangba.tv/career/queryKeDouIndexList"
 	payload := strings.NewReader(fmt.Sprintf("sortProperty=activeData&sign=%v&appkey=show_android&userId=50166072&channelType=a_xiaomi&pageSize=20&timestamp=%v&appType=android&appVersion=3.3.2&area=ALL&session_id=c44e6327-f806-41ec-aac0-d268373e8001&sex=ALL&page=%v", sign, timestamp, page)) //fmt.Sprintf()才能用%v
-	req, _ := http.NewRequest("POST", url, payload)
 	shu := 256 + i
 	cl := fmt.Sprintf("%v", shu)
-	req.Header.Add("Content-Length", cl)
-	req.Header.Add("Host", "yuewowan.yangba.tv")
-	req.Header.Add("content-type", "application/x-www-form-urlencoded")
-	req.Header.Add("Connection", "keep-alive")
-
-	//使用代理
-	var resp *http.Response
-	httpTransport := &http.Transport{ //跳过证书验证
-		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
-	}
-	httpClient := &http.Client{Transport: httpTransport}
-	if dialer != nil {
-		httpTransport.Dial = dialer.Dial
-	}
-	resp, _ = httpClient.Do(req)
-	defer resp.Body.Close()
-	body, _ := ioutil.ReadAll(resp.Body)
-
+	mapNum := make(map[string]string) //用map储存键值对信息
+	mapNum["Content-Length"] = cl
+	mapNum["Host"] = "yuewowan.yangba.tv"
+	mapNum["content-type"] = "application/x-www-form-urlencoded"
+	mapNum["Connection"] = "keep-alive"
+	body := Agent(request, url, payload, mapNum)
 	var tadpole SignalCommunicationID
 	json.Unmarshal(body, &tadpole)
 	MysqlTadpole(tadpole)
@@ -100,4 +79,34 @@ func MysqlTadpole(tadpole SignalCommunicationID) {
 		fmt.Println(est)
 	}
 	db.Close()
+}
+
+//代理
+func Agent(qingqu, url string, l *strings.Reader, to map[string]string) []byte {
+	//创建代理
+	auth := proxy.Auth{
+		User:     "itemb123",
+		Password: "kIl8Jl3aKej",
+	}
+	address := fmt.Sprintf("%s:%s", "101.133.153.21", "9999")
+	dialer, _ := proxy.SOCKS5("tcp", address, &auth, proxy.Direct)
+
+	req, _ := http.NewRequest(qingqu, url, l) //开始请求
+	for key, value := range to {
+		req.Header.Set(key, value)
+	}
+
+	//使用代理
+	var resp *http.Response
+	httpTransport := &http.Transport{ //跳过证书验证
+		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+	}
+	httpClient := &http.Client{Transport: httpTransport}
+	if dialer != nil {
+		httpTransport.Dial = dialer.Dial
+	}
+	resp, _ = httpClient.Do(req)         //处理请求
+	body, _ := ioutil.ReadAll(resp.Body) //读取响应
+
+	return body
 }

@@ -47,78 +47,38 @@ func main() {
 //爬出用户id
 func ClimbCUserID(i int) []byte {
 
+	request := "POST" //请求方式
 	url := "https://app.jinglantech.tech/message/newfans"
-	//创建代理
-	auth := proxy.Auth{
-		User:     "itemb123",
-		Password: "kIl8Jl3aKej",
-	}
-	address := fmt.Sprintf("%s:%s", "101.133.153.21", "9999")
-	dialer, _ := proxy.SOCKS5("tcp", address, &auth, proxy.Direct)
-
 	payload := strings.NewReader(fmt.Sprintf("reqUserId=68347218&pageNo=%v&pageSize=60&other_user_id=100004", i)) //fmt.Sprintf()才能用%v
-	req, _ := http.NewRequest("POST", url, payload)
-	req.Header.Add("Content-Length", "<calculated when request is sent>")
-	req.Header.Add("Host", "<calculated when request is sent>")
-	req.Header.Add("user_id", "68347218")
-	req.Header.Add("content-type", "application/x-www-form-urlencoded")
-	req.Header.Add("token", "QFUMhufACrpSRP9JbWZhsQ==")
-
-	//使用代理
-	var resp *http.Response
-	httpTransport := &http.Transport{
-		//跳过证书验证
-		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
-	}
-	httpClient := &http.Client{Transport: httpTransport}
-	if dialer != nil {
-		httpTransport.Dial = dialer.Dial
-	}
-
-	resp, _ = httpClient.Do(req)
-	//resp,_ :=  http.DefaultClient.Do(req)
-	defer resp.Body.Close()
-	body, _ := ioutil.ReadAll(resp.Body)
-	//fmt.Println(string(body))
+	mapNum := make(map[string]string)                                                                             //用map储存键值对信息
+	mapNum["Host"] = "<calculated when request is sent>"
+	mapNum["Content-Length"] = "<calculated when request is sent>"
+	mapNum["user_id"] = "68347218"
+	mapNum["content-type"] = "application/x-www-form-urlencoded"
+	mapNum["token"] = "QFUMhufACrpSRP9JbWZhsQ=="
+	body := Agent(request, url, payload, mapNum)
+	fmt.Println(body)
 	return body
 
 }
 
 //爬出通信id
 func Climb_SignalommunicationID(bang UserID) { //bang为结构体
+
 	for i := 0; i < len(bang.Data.NewFans); i++ { //循环遍历
+		request := "POST" //请求方式
 		url := fmt.Sprintf("https://app.jinglantech.tech/user/findfollowbyid")
-		//创建代理
-		auth := proxy.Auth{
-			User:     "itemb123",
-			Password: "kIl8Jl3aKej",
-		}
-		address := fmt.Sprintf("%s:%s", "101.133.153.21", "9999")
-		dialer, _ := proxy.SOCKS5("tcp", address, &auth, proxy.Direct)
-
 		payload := strings.NewReader(fmt.Sprintf("befollow_id=%v&user_id=98236258&is_login=0", bang.Data.NewFans[i].BefollowID)) //fmt.Sprintf()才能用%v
-
-		req, _ := http.NewRequest("POST", url, payload) //开始请求
-		req.Header.Set("Host", "<calculated when request is sent>")
-		req.Header.Set("user-agent", "okhttp/3.11.0")
-		req.Header.Set("content-type", "application/x-www-form-urlencoded")
-
-		//使用代理
-		var resp *http.Response
-		httpTransport := &http.Transport{
-			//跳过证书验证
-			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
-		}
-		httpClient := &http.Client{Transport: httpTransport}
-		if dialer != nil {
-			httpTransport.Dial = dialer.Dial
-		}
-		resp, _ = httpClient.Do(req)
-		body, _ := ioutil.ReadAll(resp.Body) //读取响应
-		var tem SignalCommunicationID        //用结构体
+		mapNum := make(map[string]string)                                                                                        //用map储存键值对信息
+		mapNum["Host"] = "<calculated when request is sent>"
+		mapNum["user-agent"] = "okhttp/3.11.0"
+		mapNum["content-type"] = "application/x-www-form-urlencoded"
+		body := Agent(request, url, payload, mapNum) //调用Agent()
+		var tem SignalCommunicationID                //用结构体
 		json.Unmarshal(body, &tem)
 		MysqlLookingForward(tem)
 	}
+
 }
 
 //将数据传到数据库
@@ -130,4 +90,35 @@ func MysqlLookingForward(s SignalCommunicationID) {
 		fmt.Println(shuju)
 	}
 	db.Close()
+}
+
+//代理
+func Agent(qingqu, url string, l *strings.Reader, to map[string]string) []byte {
+
+	//创建代理
+	auth := proxy.Auth{
+		User:     "itemb123",
+		Password: "kIl8Jl3aKej",
+	}
+	address := fmt.Sprintf("%s:%s", "101.133.153.21", "9999")
+	dialer, _ := proxy.SOCKS5("tcp", address, &auth, proxy.Direct)
+
+	req, _ := http.NewRequest(qingqu, url, l) //开始请求
+	for key, value := range to {
+		req.Header.Set(key, value)
+	}
+
+	//使用代理
+	var resp *http.Response
+	httpTransport := &http.Transport{ //跳过证书验证
+		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+	}
+	httpClient := &http.Client{Transport: httpTransport}
+	if dialer != nil {
+		httpTransport.Dial = dialer.Dial
+	}
+
+	resp, _ = httpClient.Do(req)         //处理请求
+	body, _ := ioutil.ReadAll(resp.Body) //读取响应
+	return body
 }
