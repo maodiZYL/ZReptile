@@ -23,7 +23,7 @@ type SignalCommunicationID struct {
 	} `json:"res"`
 }
 
-func ComTbLinzhu() {
+func main() {
 	for n := 1; n <= 40; n++ {
 		for i := 1; i <= 11; i++ {
 			time.Sleep(time.Second * 1) //设置时间
