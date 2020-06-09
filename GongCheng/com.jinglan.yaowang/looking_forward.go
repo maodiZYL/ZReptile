@@ -57,7 +57,7 @@ func ClimbCUserID(i int) []byte {
 	mapNum["content-type"] = "application/x-www-form-urlencoded"
 	mapNum["token"] = "QFUMhufACrpSRP9JbWZhsQ=="
 	body := Agent(request, url, payload, mapNum)
-	fmt.Println(body)
+	//fmt.Println(string(body))
 	return body
 
 }
@@ -76,6 +76,7 @@ func Climb_SignalommunicationID(bang UserID) { //bang为结构体
 		body := Agent(request, url, payload, mapNum) //调用Agent()
 		var tem SignalCommunicationID                //用结构体
 		json.Unmarshal(body, &tem)
+		//fmt.Println(string(body))
 		MysqlLookingForward(tem)
 	}
 

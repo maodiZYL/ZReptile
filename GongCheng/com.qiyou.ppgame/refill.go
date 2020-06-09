@@ -18,7 +18,6 @@ import (
 	"io/ioutil"
 	"net/http"
 	_ "net/url"
-	"strings"
 	"time"
 )
 
@@ -45,7 +44,7 @@ func Climb_SignalommunicationID(pageid int) {
 	mapNum["Host"] = "apk.qqi2019.com:8001"
 	mapNum["User-Agent"] = "okhttp/3.12.1"
 	mapNum["Connection"] = "keep-alive"
-	body := Agent(request, url, nil, mapNum)
+	body := Agent(request, url, mapNum)
 	var tem SignalCommunicationID //用结构体
 	json.Unmarshal(body, &tem)    //将查到的数据放到结构体中
 	//fmt.Println(string(body))    //打印body内数据
@@ -75,7 +74,7 @@ func MysqlRefill(refill SignalCommunicationID) {
 	db.Close()
 }
 
-func Agent(request, url string, l *strings.Reader, to map[string]string) []byte {
+func Agent(request, url string, to map[string]string) []byte {
 
 	//创建代理
 	auth := proxy.Auth{
@@ -85,7 +84,7 @@ func Agent(request, url string, l *strings.Reader, to map[string]string) []byte 
 	address := fmt.Sprintf("%s:%s", "101.133.153.21", "9999")
 	dialer, _ := proxy.SOCKS5("tcp", address, &auth, proxy.Direct)
 
-	req, _ := http.NewRequest(request, url, l) //开始请求
+	req, _ := http.NewRequest(request, url, nil) //开始请求
 	for key, value := range to {
 		req.Header.Set(key, value)
 	}

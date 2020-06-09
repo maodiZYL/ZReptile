@@ -46,7 +46,8 @@ func Climb_SignalommunicationID(pageIndex int, typechange int) {
 	mapNum["user-agent"] = "gzip"
 	body := Agent(request, url, payload, mapNum)
 	var kitty SignalCommunicationID //应用结构体
-	json.Unmarshal(body, &kitty)    //将数据存放到结构体中
+	fmt.Println(string(body))
+	json.Unmarshal(body, &kitty) //将数据存放到结构体中
 	//fmt.Println(kitty)          //控制台输出mao
 	MsqlKitty(kitty)
 }
@@ -62,7 +63,7 @@ func MsqlKitty(mao SignalCommunicationID) {
 	db.Close()
 }
 
-func Agent(request, url string, l *strings.Reader, to map[string]string) []byte {
+func Agent(request, url string, payload *strings.Reader, to map[string]string) []byte {
 
 	//创建代理
 	auth := proxy.Auth{
@@ -72,7 +73,7 @@ func Agent(request, url string, l *strings.Reader, to map[string]string) []byte 
 	address := fmt.Sprintf("%s:%s", "101.133.153.21", "9999")
 	dialer, _ := proxy.SOCKS5("tcp", address, &auth, proxy.Direct)
 
-	req, _ := http.NewRequest(request, url, l) //开始请求
+	req, _ := http.NewRequest(request, url, payload) //开始请求
 	for key, value := range to {
 		req.Header.Set(key, value)
 	}

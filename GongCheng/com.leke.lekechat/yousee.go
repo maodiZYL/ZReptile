@@ -55,6 +55,7 @@ func Climb_SignalommunicationID(currentPage int) {
 	body := Agent(request, url, payload, mapNum)
 	var yousee SignalCommunication
 	json.Unmarshal(body, &yousee)
+	fmt.Println(string(body))
 	Mysqlyousee(yousee)
 
 }
