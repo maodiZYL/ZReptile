@@ -32,6 +32,7 @@ func main() {
 		time.Sleep(time.Second * 1)
 	}
 }
+
 func Climb_SignalommunicationID() { //bang为结构体，接收的是结构体
 
 	request := "POSt"

@@ -52,6 +52,7 @@ func MysqlVin(s SignalCommunicationID) {
 	}
 	db.Close()
 }
+
 func Agent(request, url string, mapNum map[string]string) []byte {
 
 	//创建代理
