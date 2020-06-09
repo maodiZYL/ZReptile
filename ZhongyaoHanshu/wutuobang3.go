@@ -108,10 +108,13 @@ func yonghu(bangming string) {
 		var tem2 Wutuobang2                  //用结构体
 		json.Unmarshal(body, &tem2)
 		//将查到的数据放到结构体中
-		for i := 0; i < len(tem2.Members); i++ {
+		/*for i := 0; i < len(tem2.Members); i++ {
 			n := tem2.Members[i].ID
 			Tongxing2(ne, n)
-		}
+		}*/
+
+		Mysql5(tem2)
+
 	}
 }
 
@@ -159,13 +162,14 @@ func Tongxing2(bang string, bang2 string) { //bang为结构体，接收的是结
 	json.Unmarshal(body, &tem)           //将查到的数据放到结构体中
 	//fmt.Println(string(body))
 	fmt.Println(string(body))
-	Mysql5(tem)
+	//
+	//    Mysql5(tem)
 }
-func Mysql5(wubang tongxing2) {
+func Mysql5(wubang Wutuobang2) {
 	db, _ := sql.Open("mysql", "root:haosql@tcp(127.0.0.1:3306)/blogdb?charset=utf8") //链接数据库
-	stmt, _ := db.Prepare("INSERT wutuo2 (n_id) values (?)")                          //插入语句   字段不能填错
-	for i := 0; i < len(wubang.ImC2CGroupID); i++ {                                   //循环插入
-		shuju, _ := stmt.Exec((wubang.ImC2CGroupID)) //执行数据存储
+	stmt, _ := db.Prepare("INSERT wutuo1 (n_id) values (?)")                          //插入语句   字段不能填错
+	for i := 0; i < len(wubang.Members); i++ {                                        //循环插入
+		shuju, _ := stmt.Exec((wubang.Members[i].ID)) //执行数据存储
 		fmt.Println(shuju)
 	}
 	db.Close()
