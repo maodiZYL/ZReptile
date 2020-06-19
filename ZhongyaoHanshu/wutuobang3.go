@@ -8,7 +8,6 @@ import (
 	"fmt"
 	_ "github.com/go-sql-driver/mysql"
 	"golang.org/x/net/proxy"
-	_ "golang.org/x/net/proxy"
 	"io/ioutil"
 	"net/http"
 )
@@ -29,6 +28,10 @@ type tongxing2 struct {
 }
 
 func main() {
+}
+
+/*func main() {
+
 	var n string
 	for i := 1; i < 20; i++ {
 		body := bangName()
@@ -42,7 +45,7 @@ func main() {
 		}
 	}
 }
-
+*/
 func bangName() []byte {
 	url := fmt.Sprintf("https://app.quanziapp.com/api/v1/recommended_spaces")
 	//创建代理
@@ -54,7 +57,7 @@ func bangName() []byte {
 	dialer, _ := proxy.SOCKS5("tcp", address, &auth, proxy.Direct)
 
 	req, _ := http.NewRequest("GET", url, nil) //开始请求
-	req.Header.Set("Host", "<calculated when request is sent>")
+	//req.Header.Set("Host", "<calculated when request is sent>")
 	req.Header.Set("x-app-version", "Android Circles 3.5.3")
 	req.Header.Set("authorization", "token Vnn9DLoPTnscLgoMRcG9eNXT1590739356.5220678")
 
@@ -87,7 +90,7 @@ func yonghu(bangming string) {
 		dialer, _ := proxy.SOCKS5("tcp", address, &auth, proxy.Direct)
 
 		req, _ := http.NewRequest("GET", url, nil) //开始请求
-		req.Header.Set("Host", "<calculated when request is sent>")
+		//req.Header.Set("Host", "<calculated when request is sent>")
 		req.Header.Set("x-app-version", "Android Circles 3.5.3")
 		req.Header.Set("authorization", "token Vnn9DLoPTnscLgoMRcG9eNXT1590739356.5220678")
 
@@ -138,9 +141,9 @@ func Tongxing2(bang string, bang2 string) { //bang为结构体，接收的是结
 	//payload := strings.NewReader(fmt.Sprintf("befollow_id=%v&user_id=98236258&is_login=0",bang.Members[i].ID)) //fmt.Sprintf()才能用%v  //传application/x-www-form-urlencoded
 
 	req, _ := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr)) //开始请求
-	req.Header.Set("Host", "<calculated when request is sent>")
+	//req.Header.Set("Host", "<calculated when request is sent>")
 	req.Header.Set("authorization", "token Vnn9DLoPTnscLgoMRcG9eNXT1590739356.5220678")
-	req.Header.Set("Content-Length", "<calculated when request is sent>")
+	//req.Header.Set("Content-Length", "<calculated when request is sent>")
 	req.Header.Set("x-app-version", "Android Circles 3.5.3")
 	req.Header.Set("content-type", "application/json; charset=utf-8")
 	req.Header.Set("accept-language", "zh")

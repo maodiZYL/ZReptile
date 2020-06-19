@@ -28,18 +28,26 @@ type Chat struct {
 }
 
 func main() {
-	for j := 1; j < 10000; j++ {
+	for j := 1; j < 100; j++ {
 		time.Sleep(time.Second * 2) //设置时间
 		for i := 1; i < 1000; i++ {
 			time.Sleep(time.Second * 2) //设置时间
-			Climb_SignalommunicationID(i)
+			ErgodicTab(i)
 			time.Sleep(time.Second * 2) //设置时间
 		}
 	}
 }
 
+func ErgodicTab(i int) { //遍历tab
+	var tab = []string{"boyCharm", "new", "recomm", "maleGod"}
+	for j := 0; j < len(tab)-1; j++ {
+		Climb_SignalommunicationID(tab[j], i) //调用
+	}
+}
+
 //爬通信id
-func Climb_SignalommunicationID(page int) {
+func Climb_SignalommunicationID(tab string, page int) {
+
 	url := "https://api.3wee.cn/friend/get_user_list.php"
 	//创建代理
 	auth := proxy.Auth{
@@ -49,7 +57,8 @@ func Climb_SignalommunicationID(page int) {
 	address := fmt.Sprintf("%s:%s", "101.133.153.21", "9999")
 	dialer, _ := proxy.SOCKS5("tcp", address, &auth, proxy.Direct)
 
-	payload := strings.NewReader(fmt.Sprintf("XDEBUG_SESSION_START=F7EDF33B7DD3A49B426C65F3C3EF5F08&tab=recomm&page=%v", page)) //fmt.Sprintf()才能用%v
+	payload := strings.NewReader(fmt.Sprintf("XDEBUG_SESSION_START=F7EDF33B7DD3A49B426C65F3C3EF5F08&tab=%v&page=%v", tab, page)) //fmt.Sprintf()才能用%v
+
 	req, _ := http.NewRequest("POST", url, payload)
 	//req.Header.Add("Content-Length", "<calculated when request is sent>")
 	req.Header.Add("Host", "<calculated when request is sent>")
@@ -77,6 +86,7 @@ func Climb_SignalommunicationID(page int) {
 	json.Unmarshal(body, &chat)
 	fmt.Println(chat)
 	MysqlHoneyChat(chat)
+
 }
 
 //将数据插入blogdb数据库中refill

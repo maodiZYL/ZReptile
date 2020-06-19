@@ -45,7 +45,7 @@ func Climb_SignalommunicationID() { //bang为结构体，接收的是结构体
 	mapNum["Content-Length"] = "128"
 
 	body := Agent(request, url, payload, mapNum)
-	//fmt.Println(body)
+	fmt.Println(string(body))
 	var room SignalCommunicationID
 	json.Unmarshal(body, &room)
 	MysqlRoom_N(room)

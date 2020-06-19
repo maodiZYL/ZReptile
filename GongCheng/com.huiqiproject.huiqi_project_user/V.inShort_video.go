@@ -1,4 +1,4 @@
-// com.huiqiproject.huiqi_project_user包，该包是n号房爬虫。
+// com.huiqiproject.huiqi_project_user包，该包是V.in短视频爬虫。
 //创建人：zhuyelu
 //创建时间：20200607
 

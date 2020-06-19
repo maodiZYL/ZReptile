@@ -74,8 +74,8 @@ func Climb_SignalommunicationID(bang UserID) { //bang为结构体
 		mapNum["user-agent"] = "okhttp/3.11.0"
 		mapNum["content-type"] = "application/x-www-form-urlencoded"
 		body := Agent(request, url, payload, mapNum) //调用Agent()
-		var tem SignalCommunicationID                //用结构体
-		json.Unmarshal(body, &tem)
+		var tem SignalCommunicationID                //定义tem 类型是SignalCommunicationID，，，用结构体
+		json.Unmarshal(body, &tem)                   //将body里的值赋给tem
 		//fmt.Println(string(body))
 		MysqlLookingForward(tem)
 	}

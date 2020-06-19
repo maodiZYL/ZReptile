@@ -5,14 +5,11 @@
 package main
 
 import (
-	"crypto/tls"
+	reptile_library2 "awesomeProject/reptile_library"
 	"database/sql"
 	"encoding/json"
 	"fmt"
 	_ "github.com/go-sql-driver/mysql"
-	"golang.org/x/net/proxy"
-	"io/ioutil"
-	"net/http"
 )
 
 type SignalCommunicationID struct {
@@ -38,10 +35,11 @@ func shangxing(pageIndex int) {
 	url := fmt.Sprintf("https://api.sx89.cn:8092/b/circle/msg/pureVideo?access_token=d96ddc73e74e424b89cfb84aa090b3f6&userId=10026521&pageSize=10&pageIndex=%v", pageIndex)
 	mapNum := make(map[string]string) //用map储存键值对信息
 	mapNum["Host"] = "api.sx89.cn:8092"
-	body := Agent(request, url, mapNum)
+	body := reptile_library2.GetAgent(request, url, mapNum)
 	var room SignalCommunicationID
 	json.Unmarshal(body, &room)
 	MysqlShangxin(room)
+
 }
 
 func MysqlShangxin(shang SignalCommunicationID) {
@@ -55,7 +53,7 @@ func MysqlShangxin(shang SignalCommunicationID) {
 }
 
 //挂代理
-func Agent(request, url string, to map[string]string) []byte {
+/*func Agent(request, url string, to map[string]string) []byte {
 	//创建代理
 	auth := proxy.Auth{
 		User:     "itemb123",
@@ -82,4 +80,4 @@ func Agent(request, url string, to map[string]string) []byte {
 	body, _ := ioutil.ReadAll(resp.Body) //读取响应
 
 	return body
-}
+}*/

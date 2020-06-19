@@ -9,6 +9,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
+	_ "github.com/Unknwon/goconfig"
 	_ "github.com/go-sql-driver/mysql" //导数据库
 	"golang.org/x/net/proxy"
 	"io/ioutil"
@@ -63,9 +64,9 @@ func Climb_SignalommunicationID(identifier string, member_id string) { //bang为
 	url := fmt.Sprintf("https://app.quanziapp.com/api/v2/im/init_c2c_group_contact")
 	payload := strings.NewReader(fmt.Sprintf(`{"identifier":"%v","member_id":"%v"}`, identifier, member_id)) //传application/json; charset=utf-8
 	mapNum := make(map[string]string)                                                                        //用map储存键值对信息
-	mapNum["Host"] = "<calculated when request is sent>"
+	//mapNum["Host"] = "<calculated when request is sent>"
 	mapNum["authorization"] = "token Vnn9DLoPTnscLgoMRcG9eNXT1590739356.5220678"
-	mapNum["Content-Length"] = "<calculated when request is sent>"
+	//mapNum["Content-Length"] = "<calculated when request is sent>"
 	mapNum["x-app-version"] = "Android Circles 3.5.3"
 	mapNum["Content-Type"] = "application/json; charset=utf-8"
 	mapNum["accept-language"] = "zh"

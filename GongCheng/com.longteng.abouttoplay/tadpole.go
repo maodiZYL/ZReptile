@@ -51,7 +51,7 @@ func Climb_SignalommunicationID(i int, page int) {
 	mapNum["Host"] = "yuewowan.yangba.tv"
 	mapNum["content-type"] = "application/x-www-form-urlencoded"
 	mapNum["Connection"] = "keep-alive"
-	body := Agent(request, url, payload, mapNum)
+	body := postAgent(request, url, payload, mapNum)
 	var tadpole SignalCommunicationID
 	json.Unmarshal(body, &tadpole)
 	MysqlTadpole(tadpole)
@@ -82,7 +82,7 @@ func MysqlTadpole(tadpole SignalCommunicationID) {
 }
 
 //代理
-func Agent(request, url string, l *strings.Reader, to map[string]string) []byte {
+func postAgent(request, url string, l *strings.Reader, to map[string]string) []byte {
 
 	//创建代理
 	auth := proxy.Auth{

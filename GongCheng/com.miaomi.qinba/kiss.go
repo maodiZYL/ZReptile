@@ -40,6 +40,7 @@ func main() {
 
 //FromData传值
 func FromData() {
+
 	postData := make(map[string]string)
 	postData["user_code"] = "9c535d06fcd37ec6dc576abc73581bc6"
 	postData["source"] = "android"
@@ -51,6 +52,7 @@ func FromData() {
 	postData["keywords"] = "7"
 	postData["sign"] = "cc79c19f7a46f644122da76f39e758be"
 	Climb_SignalommunicationID(&postData)
+
 }
 
 //爬取私信Id
@@ -81,6 +83,7 @@ func Climb_SignalommunicationID(postData *map[string]string) {
 
 //将数据插入blogdb数据库kiss表
 func MysqlKiss(kiss SignalCommunicationID) {
+
 	db, _ := sql.Open("mysql", "root:haosql@tcp(127.0.0.1:3306)/blogdb?charset=utf8")
 	stmt, _ := db.Prepare("insert kiss(n_id) values(?)")
 	for i := 0; i < len(kiss.Result.Users); i++ {
@@ -88,6 +91,7 @@ func MysqlKiss(kiss SignalCommunicationID) {
 		fmt.Println(est)
 	}
 	db.Close()
+
 }
 
 //代理
@@ -119,4 +123,5 @@ func Agent(request, url string, l *bytes.Buffer, to map[string]string) []byte {
 	resp, _ = httpClient.Do(req)         //处理请求
 	body, _ := ioutil.ReadAll(resp.Body) //读取响应
 	return body
+
 }

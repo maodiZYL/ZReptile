@@ -5,18 +5,15 @@
 package main
 
 import (
+	"awesomeProject/reptile_library"
 	"crypto/md5"
 	_ "crypto/md5"
-	"crypto/tls"
 	"database/sql"
 	"encoding/hex"
 	_ "encoding/hex"
 	"encoding/json"
 	"fmt"
 	_ "github.com/go-sql-driver/mysql"
-	"golang.org/x/net/proxy"
-	"io/ioutil"
-	"net/http"
 	_ "net/url"
 	"time"
 )
@@ -44,7 +41,7 @@ func Climb_SignalommunicationID(pageid int) {
 	mapNum["Host"] = "apk.qqi2019.com:8001"
 	mapNum["User-Agent"] = "okhttp/3.12.1"
 	mapNum["Connection"] = "keep-alive"
-	body := Agent(request, url, mapNum)
+	body := reptile_library.GetAgent(request, url, mapNum)
 	var tem SignalCommunicationID //用结构体
 	json.Unmarshal(body, &tem)    //将查到的数据放到结构体中
 	//fmt.Println(string(body))    //打印body内数据
@@ -74,7 +71,7 @@ func MysqlRefill(refill SignalCommunicationID) {
 	db.Close()
 }
 
-func Agent(request, url string, to map[string]string) []byte {
+/*func Agent(request, url string, to map[string]string) []byte {
 
 	//创建代理
 	auth := proxy.Auth{
@@ -104,3 +101,4 @@ func Agent(request, url string, to map[string]string) []byte {
 	return body
 
 }
+*/
